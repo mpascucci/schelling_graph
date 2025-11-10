@@ -1,10 +1,14 @@
 
-from numpy import log, random
+from typing import Callable
+import numpy as np
+import random
 from matplotlib import pyplot as plt
 from schelling_graph.visualization import _draw_graph, _draw_matrix
 from schelling_graph.structures import Schelling_Node
 from schelling_graph.tools import create_vertex_matrix, get_nodes_by_color
+from .structures import Colors
 import termcolor as tc
+
 
 
 class Schelling_Graph:
@@ -18,7 +22,8 @@ class Schelling_Graph:
         return [n for n in self.nodes if n.chips > 0]
 
     def add_arrow(self, from_vertex: Schelling_Node, to_vertex: Schelling_Node, color: str):
-        linked_vertices = self.nbc[color]
+        c = Colors(color)
+        linked_vertices = self.nbc[c]
         from_vertex.add_arrow(
             to=to_vertex, linked_vertices=linked_vertices, color=color)
 
@@ -60,7 +65,7 @@ class Schelling_Graph:
     def run_one_round(self):
         run_round(self)
 
-    def run_rounds(self, stop_when: function = lambda: False, max_rounds: int = 1000):
+    def run_rounds(self, stop_when: Callable = lambda: False, max_rounds: int = 1000):
         idlecount = 0
         round_count = 0
         logs = []
@@ -138,8 +143,7 @@ def move_chips(node, arrow, out_node):
 
 def run_round(schelling_graph: Schelling_Graph):
     # sample a node with uniform distribution, if it has no chips, sample again
-    g = schelling_graph
-    node = random.choice(g.nodes_with_chips)
+    node = random.choice(schelling_graph.nodes_with_chips)
 
     # choose an arrow with uniform distribution
     # candidate arrows have out_nodes with chips > 0

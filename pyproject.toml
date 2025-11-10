@@ -1,0 +1,42 @@
+[project]
+name = "schelling_graph"
+version = "0.1.0"
+description = "A Schelling segregation model implementation using graphs"
+readme = { file = "README.md", content-type = "text/markdown" }
+keywords = ["schelling", "graph", "simulation", "segregation"]
+authors = [{ name = "Marco Pascucci", email = "marpas.paris@gmail.com" }]
+license = "GPL-2.0-or-later"
+license-files = ["LICENSE.TXT"]
+requires-python = "== 3.13"
+classifiers = [
+    # How mature is this project? Common values are
+    #   3 - Alpha
+    #   4 - Beta
+    #   5 - Production/Stable
+    "Development Status :: 4 - Beta",
+
+    # Indicate who your project is intended for
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Simulation",
+
+    # Specify the Python versions you support here.
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "numpy >=1.21.0",
+    "matplotlib >=3.4.0",
+    "termcolor >=1.1.0",
+]
+
+[project.urls]
+Documentation = "https://github.com/mpascucci/schelling_graph"
+Repository = "https://github.com/mpascucci/schelling_graph.git"
+Issues = "https://github.com/mpascucci/schelling_graph/issues"
+Changelog = "https://github.com/mpascucci/schelling_graph/blob/master/CHANGELOG.md"
+
+[project.optional-dependencies]
+3D-visualization = ["mayavi"]
+
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
