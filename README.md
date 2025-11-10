@@ -1,5 +1,5 @@
-# Alfie's Project
-Simulation and visualization for a [Schelling's segregation model](https://en.wikipedia.org/wiki/Schelling%27s_model_of_segregation)
+# Schelling's Graph simulation
+Simulation and visualization of [Schelling's segregation models](https://en.wikipedia.org/wiki/Schelling%27s_model_of_segregation).
 
 ## Installation
 ```bash
