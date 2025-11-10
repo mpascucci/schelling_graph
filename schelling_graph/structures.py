@@ -12,7 +12,7 @@ class Colors(Enum):
     GREEN = "green"
 
 
-class Vertex():
+class Node():
     def __init__(self, id=None):
         # Generate a random ID if none is provided
         self.id = id if id is not None else ''.join(
@@ -23,17 +23,17 @@ class Vertex():
         self.edges.append(edge)
 
 
-class Schelling_Node(Vertex):
-    def __init__(self, x: int, y: int, chips: int = 0, id=None, color: str = None):
+class Schelling_Node(Node):
+    def __init__(self, x: int, y: int, chips: int = 0, id=None, color:Colors=Colors.BLACK):
         super().__init__(id)
         self.chips: int = chips  # Number of chips on the vertex
         # List of arrows originating from this vertex
         self.arrows: list[Shelling_Arrow] = []
         self.x: int = x  # X position
         self.y: int = y  # Y position
-        self.color: str = color  # Color (just for visualization purposes)
+        self.color: Colors = color  # Color (just for visualization purposes)       
 
-    def add_arrow(self, to: 'Schelling_Node', linked_vertices: list['Schelling_Node'], color: str):
+    def add_arrow(self, to: 'Schelling_Node', linked_vertices: list['Schelling_Node'], color: Colors):
         arrow = Shelling_Arrow(to, linked_vertices, color)
         # Ensure all linked vertices have the same color as the arrow
         for v in linked_vertices:
@@ -42,11 +42,11 @@ class Schelling_Node(Vertex):
 
 
 class Shelling_Arrow():
-    def __init__(self, to_node: Schelling_Node, linked_nodes: list[Schelling_Node], color: str):
+    def __init__(self, to_node: Schelling_Node, linked_nodes: list[Schelling_Node], color:Colors=Colors.BLACK):
         self.neighbor: Schelling_Node = to_node  # The neighboring vertex
         # The linked vertices
         self.out_edge_nodes: list[Schelling_Node] = linked_nodes
         # Color of the arrow (for visualization purposes)
-        self.color: str = color
+        self.color: Colors = color
 
 

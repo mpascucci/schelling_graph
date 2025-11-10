@@ -1,23 +1,25 @@
 import matplotlib.pyplot as plt
+import matplotlib as mpl
 import numpy as np
 from schelling_graph import Schelling_Node
 from schelling_graph.tools import create_vertex_matrix
+from mpl_toolkits.mplot3d import Axes3D
 
-def _draw_graph(vertices: list[Schelling_Node], ax=None):
-    for vertex in vertices:
-        ax.scatter(vertex.x, vertex.y, s=1000, c=vertex.color.value)
-        ax.scatter(vertex.x, vertex.y, s=300, c='white')
+def _draw_graph(nodes: list[Schelling_Node], ax):
+    for node in nodes:
+        ax.scatter(node.x, node.y, s=1000, c=node.color.value)
+        ax.scatter(node.x, node.y, s=300, c='white')
         
         count_n = 0
         count_s = 0
         count_e = 0
         count_w = 0
 
-        for i, arrow in enumerate(vertex.arrows):
+        for i, arrow in enumerate(node.arrows):
             nx = arrow.neighbor.x
             ny = arrow.neighbor.y
-            x = vertex.x
-            y = vertex.y
+            x = node.x
+            y = node.y
             
             orientation = (nx - x, ny - y)
             n = orientation[1] > 0
@@ -65,10 +67,10 @@ def _draw_graph(vertices: list[Schelling_Node], ax=None):
             count_w += w
 
 
-        ax.text(vertex.x, vertex.y, str(vertex.chips), color='black', fontsize=12, ha='center', va='center')
+        ax.text(node.x, node.y, str(node.chips), color='black', fontsize=12, ha='center', va='center')
 
-    rows = max(v.x for v in vertices) + 1
-    cols = max(v.y for v in vertices) + 1
+    rows = max(v.x for v in nodes) + 1
+    cols = max(v.y for v in nodes) + 1
     ax.set_xticks(np.arange(0, cols , 1))
     ax.set_yticks(np.arange(0, rows, 1))
     ax.set_xlim(-0.5, cols - 0.5)
@@ -80,7 +82,7 @@ def draw_graph(vertices: list[Schelling_Node]):
     plt.show()
     return fig, ax
 
-def _draw_matrix(matrix_or_vertices, ax=None):
+def _draw_matrix(matrix_or_vertices, ax):
     """Draws the given matrix of Schelling_Vertex objects using matplotlib."""
     if isinstance(matrix_or_vertices, list):
         matrix = create_vertex_matrix(matrix_or_vertices)
@@ -102,14 +104,14 @@ def _draw_matrix(matrix_or_vertices, ax=None):
                 textcolor = 'white' if intensity > 0.5 else 'black'
                 ax.add_patch(
 
-                    plt.Rectangle((i, j), 1, 1,
+                    plt.Rectangle((i, j), 1, 1, # type: ignore
                                   facecolor=facecolor,
                                   edgecolor='white',
                                   linewidth=1))
 
                 ax.text(i + 0.5, j + 0.5, str(vertex.chips), color=textcolor, fontsize=12, ha='center', va='center')
             else:
-                ax.add_patch(plt.Rectangle((i, j), 1, 1, color='lightgray', fill=False))
+                ax.add_patch(plt.Rectangle((i, j), 1, 1, color='lightgray', fill=False)) # type: ignore
     ax.set_xlim(0, cols)
     ax.set_ylim(0, rows)
     ax.set_aspect('equal')
@@ -122,7 +124,6 @@ def _draw_matrix(matrix_or_vertices, ax=None):
 
 
 def draw_matrix_3D(matrix_or_vertices: list[Schelling_Node] | np.ndarray):
-    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 

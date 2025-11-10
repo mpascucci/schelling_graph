@@ -21,7 +21,7 @@ class Schelling_Graph:
     def nodes_with_chips(self) -> list[Schelling_Node]:
         return [n for n in self.nodes if n.chips > 0]
 
-    def add_arrow(self, from_vertex: Schelling_Node, to_vertex: Schelling_Node, color: str):
+    def add_arrow(self, from_vertex: Schelling_Node, to_vertex: Schelling_Node, color: Colors):
         c = Colors(color)
         linked_vertices = self.nbc[c]
         from_vertex.add_arrow(
@@ -88,9 +88,9 @@ class Schelling_Graph:
         for n in self.nodes:
             n.chips = random.randint(a, b)
 
-    def init_chips_with_sample(self, samples: list[int]):
+    def set_chips(self, samples: list[int]|np.ndarray):
         """Initialize chips assigning values from the given list.
-        The values are assigned uniformly at random from the list.
+        The values are assigned uniformly at random from the list.  
         The length of samples must be equal to the number of nodes.
         """
         assert len(samples) == len(
@@ -111,6 +111,10 @@ class Schelling_Graph:
             if n.x != 0 and n.y != 0:
                 return False
         return True
+    
+
+    def __repr__(self) -> str:
+        return f"Schelling_Graph with {len(self.nodes)} nodes."
 
 
 def move_chips(node, arrow, out_node):
