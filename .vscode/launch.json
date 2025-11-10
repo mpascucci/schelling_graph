@@ -1,0 +1,16 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Run current with Anaconda Python",
+            "type": "python",
+            "request": "launch",
+            "python": "C:/ProgramData/anaconda3/python.exe",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "noDebug": true
+        }
+    ]
+}
