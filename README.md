@@ -1,9 +1,9 @@
 # Schelling Graph
-Simulation and visualization for a [Schelling's segregation model](https://en.wikipedia.org/
+Simulation and visualization for a [Schelling's segregation model](https://en.wikipedia.org/wiki/Schelling%27s_model_of_segregation)
 
 ## Installation
 ```bash
-pip install schelling-graph
+pip install -i https://test.pypi.org/simple/ schelling-graph
 ```
 
 ## Usage
@@ -28,7 +28,7 @@ g.plot(); # show the graph structure
 
 
     
-![png](README_files/README_2_0.png)
+![png](docs/images/README_2_0.png)
     
 
 
@@ -45,7 +45,7 @@ g.plot_chips();
 
 
     
-![png](README_files/README_3_0.png)
+![png](docs/images/README_3_0.png)
     
 
 
@@ -55,7 +55,9 @@ g.plot_chips();
 logs = g.run_rounds(stop_when=g.is_segregated, max_rounds=5000)
 fig, ax = g.plot_chips()
 ```
+
+
     
-![png](README_files/README_4_0.png)
+![png](docs/images/README_4_0.png)
     
 

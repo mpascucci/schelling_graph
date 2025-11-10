@@ -1,6 +1,6 @@
 [project]
 name = "schelling_graph"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Schelling segregation model implementation using graphs"
 readme = { file = "README.md", content-type = "text/markdown" }
 keywords = ["schelling", "graph", "simulation", "segregation"]
@@ -17,7 +17,7 @@ classifiers = [
 
     # Indicate who your project is intended for
     "Intended Audience :: Science/Research",
-    "Topic :: Scientific/Engineering :: Simulation",
+    "Topic :: Scientific/Engineering :: Mathematics",
 
     # Specify the Python versions you support here.
     "Programming Language :: Python :: 3.13",
