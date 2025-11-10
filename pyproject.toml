@@ -34,9 +34,6 @@ Repository = "https://github.com/mpascucci/schelling_graph.git"
 Issues = "https://github.com/mpascucci/schelling_graph/issues"
 Changelog = "https://github.com/mpascucci/schelling_graph/blob/master/CHANGELOG.md"
 
-[project.optional-dependencies]
-3D-visualization = ["mayavi"]
-
 [build-system]
 requires = ["setuptools >= 77.0.3"]
 build-backend = "setuptools.build_meta"
