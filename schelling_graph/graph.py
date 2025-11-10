@@ -14,18 +14,18 @@ import termcolor as tc
 class Schelling_Graph:
     def __init__(self, nodes: list[Schelling_Node]):
         self.nodes = nodes
-        self.matrix = create_vertex_matrix(nodes)
+        self.matrix: np.ndarray[Schelling_Node] = create_vertex_matrix(nodes) # type: ignore
         self.nbc = get_nodes_by_color(nodes)
 
     @property
     def nodes_with_chips(self) -> list[Schelling_Node]:
         return [n for n in self.nodes if n.chips > 0]
 
-    def add_arrow(self, from_vertex: Schelling_Node, to_vertex: Schelling_Node, color: Colors):
+    def add_arrow(self, from_node: Schelling_Node, to_vertex: Schelling_Node, color: Colors):
         c = Colors(color)
         linked_vertices = self.nbc[c]
-        from_vertex.add_arrow(
-            to=to_vertex, linked_vertices=linked_vertices, color=color)
+        from_node.add_arrow(
+            to=to_vertex, linked_nodes=linked_vertices, color=color)
 
     def is_coherent(self) -> bool:
         max_x = max(v.x for v in self.nodes)
@@ -50,14 +50,34 @@ class Schelling_Graph:
     def get_node(self, x: int, y: int) -> Schelling_Node:
         return self.matrix[x][y]
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx) -> Schelling_Node:
         x, y = idx
-        return self.matrix[x][y]
+        return self.matrix[x][y] #type: ignore
 
-    def plot(self, show=True):
+    def plot_all(self, show=True):
         fig, ax = plt.subplots(1, 2, figsize=(10, 5))
-        _draw_matrix(self.matrix, ax=ax[0])
-        _draw_graph(self.nodes, ax=ax[1])
+        _draw_graph(self.nodes, ax=ax[0])
+        _draw_matrix(self.matrix, ax=ax[1])
+        ax[0].set_title("Graph Representation")
+        ax[1].set_title("Chips")
+        if show:
+            plt.show()
+        return fig, ax
+    
+    def plot_chips(self, show=True, ax=None):
+        fig = None
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(5, 5))
+        _draw_matrix(self.matrix, ax=ax)
+        if show:
+            plt.show()
+        return fig, ax
+
+    def plot(self, show=True, ax=None):
+        fig = None
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(5, 5))
+        _draw_graph(self.nodes, ax=ax)
         if show:
             plt.show()
         return fig, ax
@@ -115,6 +135,30 @@ class Schelling_Graph:
 
     def __repr__(self) -> str:
         return f"Schelling_Graph with {len(self.nodes)} nodes."
+    
+
+    def copy(self):
+        """Create a deep copy of the graph."""
+        node_map = {}
+        new_nodes = []
+        for node in self.nodes:
+            new_node = Schelling_Node(x=node.x, y=node.y, color=node.color)
+            new_node.chips = node.chips
+            node_map[node] = new_node
+            new_nodes.append(new_node)
+
+        new_graph = Schelling_Graph(new_nodes)
+
+        for node in self.nodes:
+            new_node = node_map[node]
+            for arrow in node.arrows:
+                neighbor = node_map[arrow.neighbor]
+                linked_nodes = [
+                    node_map[n] for n in arrow.out_edge_nodes]
+                new_node.add_arrow(
+                    to=neighbor, linked_nodes=linked_nodes, color=arrow.color)
+
+        return new_graph
 
 
 def move_chips(node, arrow, out_node):
