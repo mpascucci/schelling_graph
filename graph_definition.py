@@ -27,8 +27,8 @@ g = sg.Schelling_Graph(vertices)
 # for v in vertices:
 #     v.chips = random.randint(1, 2)
 
-g[1,2].chips = 1
-g[0,0].chips = 1
+# g[1,2].chips = 1
+# g[0,0].chips = 1
 
 #%% ARROWS =====================================================
 g.add_arrow(g[0,0], g[0,1], color=C.BLUE)

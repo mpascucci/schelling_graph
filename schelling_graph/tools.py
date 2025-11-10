@@ -15,7 +15,7 @@ def get_vertex_at_position(x: int, y: int, vertices: list[Schelling_Node]) -> Sc
             return vertex
     return None
 
-def create_vertex_matrix(vertices: list[Schelling_Node]) -> np.ndarray:
+def create_vertex_matrix(vertices: list[Schelling_Node]) -> np.ndarray[Schelling_Node]: #type: ignore
     dim = 4
     # Create a matrix to hold the vertices based on their (x, y) positions
     m = np.zeros((dim, dim), dtype=Schelling_Node)
@@ -23,4 +23,4 @@ def create_vertex_matrix(vertices: list[Schelling_Node]) -> np.ndarray:
         # Ensure no two vertices occupy the same position
         assert not m[vertex.x, vertex.y], f"Two vertices cannot occupy the same position { (vertex.x, vertex.y) }."
         m[vertex.x, vertex.y] = vertex
-    return m
+    return m #type: ignore
