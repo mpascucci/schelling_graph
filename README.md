@@ -12,8 +12,6 @@ The file `graph_definition.py` contains the definition of the graph `g` used in 
 
 ```python
 from graph_definition import g
-from schelling_graph.visualization import draw_matrix_3D
-import numpy as np
 
 print(g)
 ```
@@ -36,8 +34,14 @@ g.plot(); # show the graph structure
 ```python
 # assign chips
 n = len(g.nodes)
-chips = np.random.randint(0, 60, size=n)
-g.set_chips(chips)
+
+g.init_chips_uniform(min=0, max=10)
+# or equivalently:
+# from random import randint
+# chips = [randint(0, 10) for _ in range(n)]
+# g.set_chips(chips, randomize=True)
+
+
 g_pre = g.copy() # save pre-move state
 
 g.plot_chips();
@@ -61,3 +65,8 @@ fig, ax = g.plot_chips()
 ![png](docs/images/README_4_0.png)
     
 
+
+
+```python
+
+```

@@ -1,5 +1,5 @@
 
-from typing import Callable
+from typing import Callable, MutableSequence, Type
 import numpy as np
 import random
 from matplotlib import pyplot as plt
@@ -10,11 +10,11 @@ from .structures import Colors
 import termcolor as tc
 
 
-
 class Schelling_Graph:
     def __init__(self, nodes: list[Schelling_Node]):
         self.nodes = nodes
-        self.matrix: np.ndarray[Schelling_Node] = create_vertex_matrix(nodes) # type: ignore
+        self.matrix: np.ndarray[Schelling_Node] = create_vertex_matrix(  # type: ignore
+            nodes)  # type: ignore
         self.nbc = get_nodes_by_color(nodes)
 
     @property
@@ -52,7 +52,7 @@ class Schelling_Graph:
 
     def __getitem__(self, idx) -> Schelling_Node:
         x, y = idx
-        return self.matrix[x][y] #type: ignore
+        return self.matrix[x][y]  # type: ignore
 
     def plot_all(self, show=True):
         fig, ax = plt.subplots(1, 2, figsize=(10, 5))
@@ -63,7 +63,7 @@ class Schelling_Graph:
         if show:
             plt.show()
         return fig, ax
-    
+
     def plot_chips(self, show=True, ax=None):
         fig = None
         if ax is None:
@@ -103,25 +103,55 @@ class Schelling_Graph:
 
         return logs + [f"Condition satisfied, stopping simulation after {round_count} rounds."]
 
-    def init_chips_uniform(self, a=0, b=5):
-        """Initialize chips uniformly between a and b (inclusive)"""
+    def init_chips_uniform(self, min=0, max=5):
+        """Initialize chips uniformly between a and b (inclusive)
+        returns the list of chips assigned."""
+        chips = []
         for n in self.nodes:
-            n.chips = random.randint(a, b)
+            n.chips = random.randint(min, max)
+            chips.append(n.chips)
+        return chips
 
-    def set_chips(self, samples: list[int]|np.ndarray):
+    def init_chips_multinomial(self, pvals: list[float] | np.ndarray):
+        """Initialize chips using a multinomial distribution with given probabilities.
+        The length of pvals must be equal to the number of nodes.
+        The sum of pvals must be 1.
+
+        returns the list of chips assigned.
+        """
+
+        assert len(pvals) == len(
+            self.nodes), "The length of pvals must be equal to the number of nodes"
+        assert abs(sum(pvals) - 1.0) < 1e-8, "The sum of pvals must be 1."
+
+        total_number_of_chips = 100  # You can adjust this value as needed
+
+        chips = np.random.multinomial(n=total_number_of_chips, pvals=pvals)
+
+        for i, n in enumerate(self.nodes):
+            n.chips = chips[i]
+
+        return chips
+
+    def set_chips(self, chips: MutableSequence[int], randomize: bool = False):
         """Initialize chips assigning values from the given list.
         The values are assigned uniformly at random from the list.  
         The length of samples must be equal to the number of nodes.
+
+        If randomize is False, the values are assigned in the order of the nodes list of this graph.
+
+        returns the list of chips assigned.
         """
-        assert len(samples) == len(
+        assert len(chips) == len(
             self.nodes), "The length of samples must be equal to the number of nodes"
 
-        idxs = list(range(len(samples)))
-        for n in self.nodes:
-            # pop an item from samples at random
-            i = random.choice(idxs)
-            idxs.remove(i)
-            n.chips = samples[i]
+        if randomize:
+            random.shuffle(chips)
+
+        for i, n in enumerate(self.nodes):
+            n.chips = chips[i]
+
+        return chips
 
     def is_segregated(self) -> bool:
         """Check if the graph is segregated.
@@ -131,11 +161,9 @@ class Schelling_Graph:
             if n.x != 0 and n.y != 0:
                 return False
         return True
-    
 
     def __repr__(self) -> str:
         return f"Schelling_Graph with {len(self.nodes)} nodes."
-    
 
     def copy(self):
         """Create a deep copy of the graph."""
