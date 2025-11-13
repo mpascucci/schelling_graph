@@ -4,7 +4,7 @@ import schelling_graph as sg
 import numpy as np
 C = sg.Colors
 
-# %% VERTICES =====================================================
+# %% NODES =====================================================
 
 nodes = [
     sg.Schelling_Node(x=0, y=3, chips=0, color=C.BLACK),

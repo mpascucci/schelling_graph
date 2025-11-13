@@ -65,8 +65,3 @@ fig, ax = g.plot_chips()
 ![png](docs/images/README_4_0.png)
     
 
-
-
-```python
-
-```
