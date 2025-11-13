@@ -121,8 +121,9 @@ class Schelling_Graph:
         """
 
         assert len(pvals) == len(
-            self.nodes), "The length of pvals must be equal to the number of nodes"
-        assert abs(sum(pvals) - 1.0) < 1e-8, "The sum of pvals must be 1."
+            self.nodes), f"The length of pvals ({len(pvals)}) must be equal to the number of nodes ({len(self.nodes)})."
+        assert abs(
+            sum(pvals) - 1.0) < 1e-8, f"The sum of pvals must be 1 (with precision > 1e-8), got {sum(pvals):.8f}."
 
         total_number_of_chips = 100  # You can adjust this value as needed
 
