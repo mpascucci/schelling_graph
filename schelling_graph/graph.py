@@ -21,6 +21,10 @@ class Schelling_Graph:
     def nodes_with_chips(self) -> list[Schelling_Node]:
         return [n for n in self.nodes if n.chips > 0]
 
+    @property
+    def chips(self) -> list[int]:
+        return [n.chips for n in self.nodes]
+
     def add_arrow(self, from_node: Schelling_Node, to_vertex: Schelling_Node, color: Colors):
         c = Colors(color)
         linked_vertices = self.nbc[c]
@@ -104,20 +108,16 @@ class Schelling_Graph:
         return logs + [f"Condition satisfied, stopping simulation after {round_count} rounds."]
 
     def init_chips_uniform(self, min=0, max=5):
-        """Initialize chips uniformly between a and b (inclusive)
-        returns the list of chips assigned."""
+        """Initialize chips uniformly between a and b (inclusive)."""
         chips = []
         for n in self.nodes:
             n.chips = random.randint(min, max)
             chips.append(n.chips)
-        return chips
 
     def init_chips_multinomial(self, pvals: list[float] | np.ndarray):
         """Initialize chips using a multinomial distribution with given probabilities.
         The length of pvals must be equal to the number of nodes.
         The sum of pvals must be 1.
-
-        returns the list of chips assigned.
         """
 
         assert len(pvals) == len(
@@ -131,16 +131,12 @@ class Schelling_Graph:
         for i, n in enumerate(self.nodes):
             n.chips = chips[i]
 
-        return chips
-
     def set_chips(self, chips: MutableSequence[int], randomize: bool = False):
         """Initialize chips assigning values from the given list.
         The values are assigned uniformly at random from the list.  
         The length of samples must be equal to the number of nodes.
 
         If randomize is False, the values are assigned in the order of the nodes list of this graph.
-
-        returns the list of chips assigned.
         """
         assert len(chips) == len(
             self.nodes), "The length of samples must be equal to the number of nodes"
@@ -150,8 +146,6 @@ class Schelling_Graph:
 
         for i, n in enumerate(self.nodes):
             n.chips = chips[i]
-
-        return chips
 
     def is_segregated(self) -> bool:
         """Check if the graph is segregated.
