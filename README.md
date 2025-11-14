@@ -70,14 +70,4 @@ ani = g.animate(interval=200)
 
 <html></html>
 
-animation
-<iframe 
-    id="animation"
-    title="Simulation animation"
-    src="docs/images/schelling_simulation.html"
-    width="650" height="650"
-    frameborder="0"
-    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
-</iframe>
-
-
+see the [animation of the simulation](docs/images/schelling_simulation.html).
