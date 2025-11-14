@@ -1,5 +1,5 @@
 
-from typing import Callable, MutableSequence, Type
+from typing import Callable, MutableSequence, Sequence, Tuple, Type
 import numpy as np
 import random
 from matplotlib import pyplot as plt
@@ -127,23 +127,28 @@ class Schelling_Graph:
             n.chips = random.randint(min, max)
             chips.append(n.chips)
 
-    def init_chips_multinomial(self, pvals: list[float] | np.ndarray):
+    def init_chips_multinomial(self, total_number_of_chips: int, probabilities: dict[Tuple[int, int], float]):
         """Initialize chips using a multinomial distribution with given probabilities.
-        The length of pvals must be equal to the number of nodes.
-        The sum of pvals must be 1.
+
+        probabilities is a dictionary mapping node coordinates (x,y) of the nodes to their probability.
+        The length of probabilities must be equal to the number of nodes.
+        The sum of probabilities must be 1.
         """
 
-        assert len(pvals) == len(
-            self.nodes), f"The length of pvals ({len(pvals)}) must be equal to the number of nodes ({len(self.nodes)})."
+        assert len(probabilities) == len(
+            self.nodes), f"The length of pvals ({len(probabilities)}) must be equal to the number of nodes ({len(self.nodes)})."
+
+        coords = list(probabilities.keys())
+        pvals = list(probabilities.values())
+        chips = np.random.multinomial(n=total_number_of_chips, pvals=pvals)
+
         assert abs(
             sum(pvals) - 1.0) < 1e-8, f"The sum of pvals must be 1 (with precision > 1e-8), got {sum(pvals):.8f}."
 
-        total_number_of_chips = 100  # You can adjust this value as needed
-
-        chips = np.random.multinomial(n=total_number_of_chips, pvals=pvals)
-
-        for i, n in enumerate(self.nodes):
-            n.chips = chips[i]
+        for i in range(len(coords)):
+            x, y = coords[i]
+            node = self.get_node(x, y)
+            node.chips = chips[i]
 
     def set_chips(self, chips: MutableSequence[int], randomize: bool = False):
         """Initialize chips assigning values from the given list.
