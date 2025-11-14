@@ -3,9 +3,9 @@ from typing import Callable, MutableSequence, Type
 import numpy as np
 import random
 from matplotlib import pyplot as plt
-from schelling_graph.visualization import _draw_graph, _draw_matrix
+from schelling_graph.visualization import _draw_graph, _draw_matrix, animate_chips_matrices
 from schelling_graph.structures import Schelling_Node
-from schelling_graph.tools import create_vertex_matrix, get_nodes_by_color
+from schelling_graph.tools import create_vertex_matrix, get_nodes_by_color, node_matrix_2_int_matrix
 from .structures import Colors
 import termcolor as tc
 
@@ -15,7 +15,13 @@ class Schelling_Graph:
         self.nodes = nodes
         self.matrix: np.ndarray[Schelling_Node] = create_vertex_matrix(  # type: ignore
             nodes)  # type: ignore
+
         self.nbc = get_nodes_by_color(nodes)
+        self._animation_frames = []
+
+    @property
+    def chips_matrix(self) -> np.ndarray:
+        return node_matrix_2_int_matrix(self.matrix)
 
     @property
     def nodes_with_chips(self) -> list[Schelling_Node]:
@@ -61,7 +67,7 @@ class Schelling_Graph:
     def plot_all(self, show=True):
         fig, ax = plt.subplots(1, 2, figsize=(10, 5))
         _draw_graph(self.nodes, ax=ax[0])
-        _draw_matrix(self.matrix, ax=ax[1])
+        _draw_matrix(self.chips_matrix, ax=ax[1])
         ax[0].set_title("Graph Representation")
         ax[1].set_title("Chips")
         if show:
@@ -72,7 +78,7 @@ class Schelling_Graph:
         fig = None
         if ax is None:
             fig, ax = plt.subplots(figsize=(5, 5))
-        _draw_matrix(self.matrix, ax=ax)
+        _draw_matrix(self.chips_matrix, ax=ax)
         if show:
             plt.show()
         return fig, ax
@@ -93,6 +99,7 @@ class Schelling_Graph:
         idlecount = 0
         round_count = 0
         logs = []
+        self._animation_frames = []
         while not stop_when() and round_count < max_rounds:
             round_count += 1
             done, s = run_round(self)
@@ -104,8 +111,14 @@ class Schelling_Graph:
                         f"Idle ({idlecount} round{'s' if idlecount > 1 else ''}).")
                     idlecount = 0
                 logs.append(s)
+                self._animation_frames.append(self.chips_matrix.copy())
 
         return logs + [f"Condition satisfied, stopping simulation after {round_count} rounds."]
+
+    def animate(self, interval=200, repeat_delay=1000):
+        ani = animate_chips_matrices(
+            self._animation_frames, interval, repeat_delay)
+        return ani
 
     def init_chips_uniform(self, min=0, max=5):
         """Initialize chips uniformly between a and b (inclusive)."""

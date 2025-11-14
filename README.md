@@ -12,7 +12,6 @@ The file `graph_definition.py` contains the definition of the graph `g` used in 
 
 ```python
 from graph_definition import g
-
 print(g)
 ```
 
@@ -35,12 +34,10 @@ g.plot(); # show the graph structure
 # assign chips
 n = len(g.nodes)
 
-g.init_chips_uniform(min=0, max=10)
-# or equivalently:
-# from random import randint
-# chips = [randint(0, 10) for _ in range(n)]
-# g.set_chips(chips, randomize=True)
-
+q=0.05
+p=0.6
+pvals = [1/10]*10
+g.init_chips_multinomial(pvals)
 
 g_pre = g.copy() # save pre-move state
 
@@ -64,4 +61,23 @@ fig, ax = g.plot_chips()
     
 ![png](docs/images/README_4_0.png)
     
+
+
+
+```python
+ani = g.animate(interval=200)
+```
+
+<html></html>
+
+animation
+<iframe 
+    id="animation"
+    title="Simulation animation"
+    src="docs/images/schelling_simulation.html"
+    width="650" height="650"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+
 
