@@ -65,9 +65,11 @@ fig, ax = g.plot_chips()
 
 
 ```python
-ani = g.animate(interval=200)
+ani = g.animate(interval=100)
 ```
 
 <html></html>
 
-see the [animation of the simulation](docs/images/schelling_simulation.html).
+See the [animation of the simulation](https://mpascucci.github.io/schelling_graph/schelling_simulation.html).
+
+
