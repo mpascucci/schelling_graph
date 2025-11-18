@@ -57,6 +57,18 @@ class Schelling_Graph:
 
         return True
 
+    def reset(self):
+        for n in self.nodes:
+            n.chips = 0
+        self._animation_frames = []
+
+    def count_chips_not_segregated(self) -> int:
+        count = 0
+        for n in self.nodes_with_chips:
+            if n.x != 0 and n.y != 0:
+                count += n.chips
+        return count
+
     def get_node(self, x: int, y: int) -> Schelling_Node:
         return self.matrix[x][y]
 
