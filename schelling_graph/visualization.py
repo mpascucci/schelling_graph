@@ -9,7 +9,7 @@ from IPython.display import HTML
 
 def _draw_graph(nodes: list[Schelling_Node], ax):
     for node in nodes:
-        ax.scatter(node.x, node.y, s=1000, c=node.color.value)
+        ax.scatter(node.x, node.y, s=1000, c=node.color)
         ax.scatter(node.x, node.y, s=300, c='white')
 
         count_n = 0
@@ -17,7 +17,10 @@ def _draw_graph(nodes: list[Schelling_Node], ax):
         count_e = 0
         count_w = 0
 
+        drown_colors = []
+
         for i, arrow in enumerate(node.arrows):
+
             nx = arrow.neighbor.x
             ny = arrow.neighbor.y
             x = node.x
@@ -28,6 +31,11 @@ def _draw_graph(nodes: list[Schelling_Node], ax):
             s = orientation[1] < 0
             e = orientation[0] > 0
             w = orientation[0] < 0
+
+            # only draw one arrow per color
+            if (arrow.color, (n, s, e, w)) in drown_colors:
+                continue
+            drown_colors.append((arrow.color, (n, s, e, w)))
 
             scale = 0.075
 
@@ -62,7 +70,7 @@ def _draw_graph(nodes: list[Schelling_Node], ax):
                         xytext=(x, y),
                         xy=(nx, ny),
                         arrowprops=dict(arrowstyle="->",
-                                        color=arrow.color.value, lw=2),
+                                        color=arrow.color, lw=2),
                         )
 
             count_n += n
@@ -73,8 +81,8 @@ def _draw_graph(nodes: list[Schelling_Node], ax):
         ax.text(node.x, node.y, str(node.chips), color='black',
                 fontsize=12, ha='center', va='center')
 
-    rows = max(v.x for v in nodes) + 1
-    cols = max(v.y for v in nodes) + 1
+    rows = max(v.y for v in nodes) + 1
+    cols = max(v.x for v in nodes) + 1
     ax.set_xticks(np.arange(0, cols, 1))
     ax.set_yticks(np.arange(0, rows, 1))
     ax.set_xlim(-0.5, cols - 0.5)

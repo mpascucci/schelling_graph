@@ -1,16 +1,8 @@
 import random
 import string
-from enum import Enum
+import matplotlib.colors as mcolors
 
-
-class Colors(Enum):
-    ORANGE = "orange"
-    BLUE = "blue"
-    CYAN = "cyan"
-    PURPLE = "purple"
-    BLACK = "black"
-    RED = "red"
-    GREEN = "green"
+VALID_COLORS = tuple(mcolors.CSS4_COLORS.keys())
 
 
 class Node():
@@ -25,27 +17,33 @@ class Node():
 
 
 class Schelling_Node(Node):
-    def __init__(self, x: int, y: int, chips: int = 0, id=None, color: Colors = Colors.BLACK):
+    def __init__(self, x: int, y: int, chips: int = 0, id=None, color: str = 'black'):
         super().__init__(id)
+
         self.chips: int = chips  # Number of chips on the node
         # List of arrows originating from this node
         self.arrows: list[Schelling_Arrow] = []
         self.x: int = x  # X position
         self.y: int = y  # Y position
-        self.color: Colors = color  # Color
+        self.color: str = color  # Color
 
-    def add_arrow(self, to: 'Schelling_Node', linked_nodes: list['Schelling_Node'], color: Colors):
-        arrow = Schelling_Arrow(to, linked_nodes, color)
-        # Ensure all linked nodes have the same color as the arrow
-        for v in linked_nodes:
-            assert v.color == color, "All linked nodes must have the same color as the arrow."
+    def add_arrow(self, to: 'Schelling_Node', out_edge_node: 'Schelling_Node'):
+        arrow = Schelling_Arrow(to, out_edge_node)
         self.arrows.append(arrow)
+
+    def __repr__(self):
+        return f"Schelling_Node ({self.x}, {self.y}) {self.color} c={self.chips} "
 
 
 class Schelling_Arrow():
-    def __init__(self, to_node: Schelling_Node, linked_nodes: list[Schelling_Node], color: Colors = Colors.BLACK):
-        self.neighbor: Schelling_Node = to_node  # The neighboring node
+    def __init__(self, to_node: 'Schelling_Node', out_edge_node: 'Schelling_Node'):
+        self.neighbor: 'Schelling_Node' = to_node  # The neighboring node
         # The linked nodes connected by this arrow
-        self.out_edge_nodes: list[Schelling_Node] = linked_nodes
-        # Color of the arrow
-        self.color: Colors = color
+        self.out_edge_node: 'Schelling_Node' = out_edge_node
+
+    @property
+    def color(self) -> str:
+        return self.out_edge_node.color
+
+    def __repr__(self):
+        return f"Schelling_Arrow to ({self.neighbor.x} --{self.out_edge_node.color}--> {self.neighbor.y}), out_edge_node: {self.out_edge_node}"

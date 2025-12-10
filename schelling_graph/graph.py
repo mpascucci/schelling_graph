@@ -6,7 +6,6 @@ from matplotlib import pyplot as plt
 from schelling_graph.visualization import _draw_graph, _draw_matrix, animate_chips_matrices
 from schelling_graph.structures import Schelling_Node
 from schelling_graph.tools import create_vertex_matrix, get_nodes_by_color, node_matrix_2_int_matrix
-from .structures import Colors
 import termcolor as tc
 
 
@@ -31,36 +30,37 @@ class Schelling_Graph:
     def chips(self) -> list[int]:
         return [n.chips for n in self.nodes]
 
-    def add_arrow(self, from_node: Schelling_Node, to_vertex: Schelling_Node, color: Colors):
-        c = Colors(color)
-        linked_vertices = self.nbc[c]
-        from_node.add_arrow(
-            to=to_vertex, linked_nodes=linked_vertices, color=color)
+    def add_arrow(self, from_node: Schelling_Node, to_vertex: Schelling_Node, out_edge_node: Schelling_Node):
+        from_node.add_arrow(to=to_vertex, out_edge_node=out_edge_node)
 
-    def is_coherent(self) -> bool:
-        max_x = max(v.x for v in self.nodes)
-        max_y = max(v.y for v in self.nodes)
-        # A graph is coherent for all arrows if
-        # for very node n, all the nodes linked to the arrows originating from n
-        # have at least one arrow of the same color of n
-        # unless the neighbor is at the boundary (x=0, x=max_x, y=0, y=max_y)
-        for node in self.nodes:
-            for arrow in node.arrows:
-                neighbor = arrow.neighbor
-                if neighbor.x == max_x or neighbor.y == max_y:
-                    continue
-                for out_node in arrow.out_edge_nodes:
-                    if not any(a.color == node.color for a in out_node.arrows):
-                        print(
-                            f"Graph is not coherent at node ({node.x},{node.y}) with arrow to ({neighbor.x},{neighbor.y}) of color {arrow.color}")
-                        return False
+    # def is_coherent(self) -> bool:
+    #     max_x = max(v.x for v in self.nodes)
+    #     max_y = max(v.y for v in self.nodes)
+    #     # A graph is coherent for all arrows if
+    #     # for very node n, all the nodes linked to the arrows originating from n
+    #     # have at least one arrow of the same color of n
+    #     # unless the neighbor is at the boundary (x=0, x=max_x, y=0, y=max_y)
+    #     for node in self.nodes:
+    #         for arrow in node.arrows:
+    #             neighbor = arrow.neighbor
+    #             if neighbor.x == max_x or neighbor.y == max_y:
+    #                 continue
+    #             for out_node in arrow.out_edge_nodes:
+    #                 if not any(a.color == node.color for a in out_node.arrows):
+    #                     print(
+    #                         f"Graph is not coherent at node ({node.x},{node.y}) with arrow to ({neighbor.x},{neighbor.y}) of color {arrow.color}")
+    #                     return False
 
-        return True
+    #     return True
 
-    def reset(self):
+    def reset_chips(self):
         for n in self.nodes:
             n.chips = 0
         self._animation_frames = []
+
+    def reset_arrows(self):
+        for n in self.nodes:
+            n.arrows = []
 
     def count_chips_not_segregated(self) -> int:
         count = 0
@@ -195,7 +195,8 @@ class Schelling_Graph:
         node_map = {}
         new_nodes = []
         for node in self.nodes:
-            new_node = Schelling_Node(x=node.x, y=node.y, color=node.color)
+            new_node: Schelling_Node = Schelling_Node(
+                x=node.x, y=node.y, color=node.color)
             new_node.chips = node.chips
             node_map[node] = new_node
             new_nodes.append(new_node)
@@ -206,10 +207,8 @@ class Schelling_Graph:
             new_node = node_map[node]
             for arrow in node.arrows:
                 neighbor = node_map[arrow.neighbor]
-                linked_nodes = [
-                    node_map[n] for n in arrow.out_edge_nodes]
-                new_node.add_arrow(
-                    to=neighbor, linked_nodes=linked_nodes, color=arrow.color)
+                out_edge_node = node_map[arrow.out_edge_node]
+                new_node.add_arrow(to=neighbor, out_edge_node=out_edge_node)
 
         return new_graph
 
@@ -232,14 +231,14 @@ def move_chips(node, arrow, out_node):
     out_node.chips -= 1
     out_arrow.neighbor.chips += 1
 
-    s = (f"({node.x},{node.y})" +
-         tc.colored(" ---> ", arrow.color) +
-         f"({arrow.neighbor.x},{arrow.neighbor.y})" +
-         f" & ({out_node.x},{out_node.y}) " +
-         tc.colored(f" ---> ", out_arrow.color) +
-         f"({out_arrow.neighbor.x},{out_arrow.neighbor.y}).")
+    # s = (f"({node.x},{node.y})" +
+    #      tc.colored(" ---> ", arrow.color) +
+    #      f"({arrow.neighbor.x},{arrow.neighbor.y})" +
+    #      f" & ({out_node.x},{out_node.y}) " +
+    #      tc.colored(f" ---> ", out_arrow.color) +
+    #      f"({out_arrow.neighbor.x},{out_arrow.neighbor.y}).")
 
-    return s
+    return ""
 
 
 def run_round(schelling_graph: Schelling_Graph):
@@ -248,8 +247,7 @@ def run_round(schelling_graph: Schelling_Graph):
 
     # choose an arrow with uniform distribution
     # candidate arrows have out_nodes with chips > 0
-    candidate_arrows = [a for a in node.arrows if any(
-        n.chips > 0 for n in a.out_edge_nodes)]
+    candidate_arrows = [a for a in node.arrows if a.out_edge_node.chips > 0]
 
     # assert len(candidate_arrows) > 0, "No candidate arrows with out_nodes having chips > 0"
     if len(candidate_arrows) == 0:
@@ -257,11 +255,9 @@ def run_round(schelling_graph: Schelling_Graph):
 
     arrow = random.choice(candidate_arrows)
 
-    candidates = [n for n in arrow.out_edge_nodes if n.chips > 0]
-
     out_node = None
-    if len(candidates) > 0:
-        out_node = random.choice(candidates)
+    if arrow.out_edge_node.chips > 0:
+        out_node = arrow.out_edge_node
 
     # if out_node is the same as node and node has less than 2 chips, re-sample
     if out_node == node and node.chips < 2:
